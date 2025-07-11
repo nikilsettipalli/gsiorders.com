@@ -1,5 +1,8 @@
 // src/components/ProductCard.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useCart } from '../hooks/useCart';
 import WishlistButton from "./WishlistButton";
 
 interface Product {
@@ -17,132 +20,145 @@ interface Product {
   };
 }
 
-interface ProductCardProps {
-  product: Product;
+export interface ProductCardProps {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    images: string[] | null;
+    inventory_count: number;
+    brands?: { name: string; slug: string };
+    badge?: string | null; // e.g. 'Limited Batch', 'Award Winner', etc.
+    rating?: number | null; // 1-5
+  };
+  userRole?: 'user' | 'admin' | 'rep';
   onAddToCart?: (productId: string) => void;
+  className?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
-  const [isInWishlist, setIsInWishlist] = useState(false);
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  userRole = 'user',
+  onAddToCart,
+  className = '',
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { addToCart } = useCart();
 
-  // Check if product is in wishlist on component mount
-  useEffect(() => {
-    const checkWishlistStatus = async () => {
-      try {
-        const response = await fetch(`/api/wishlist/check?productId=${product.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setIsInWishlist(data.isInWishlist);
-        }
-      } catch (error) {
-        console.error('Error checking wishlist status:', error);
+  // Role-based pricing logic
+  const price =
+    userRole === 'admin' || userRole === 'rep'
+      ? product.price * 0.85 // Example: 15% wholesale discount
+      : product.price;
+
+  // Supabase CDN image URL logic
+  const imageUrl = product.images?.[0] || '/placeholder.webp';
+
+  // Badge logic (from product.badge or inventory)
+  const badge = product.badge ||
+    (product.inventory_count < 10 ? 'Limited Batch' : null);
+
+  // Rating logic (optional)
+  const rating = product.rating;
+
+  // Add to cart handler
+  const handleAddToCart = async () => {
+    if (isLoading || product.inventory_count === 0) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (onAddToCart) {
+        await onAddToCart(product.id);
+      } else {
+        await addToCart(product.id, 1);
       }
-    };
-
-    checkWishlistStatus();
-  }, [product.id]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
-  };
-
-  const handleAddToCart = () => {
-    if (onAddToCart) {
-      onAddToCart(product.id);
+    } catch (err: any) {
+      setError('Failed to add to cart. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleWishlistToggle = (productId: string, isSaved?: boolean) => {
-    setIsInWishlist(isSaved ?? !isInWishlist);
-  };
-
-  const productImage = "https://picsum.photos/400/400?random=" + product.id;
-  const brandName = product.brands?.name || "Unknown Brand";
-  const isInStock = product.inventory_count > 0;
-
   return (
-    <article className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 group relative cursor-pointer">
-      {/* Product Image Container */}
-      <div className="relative overflow-hidden">
-        <img
-          src={productImage}
+    <motion.article
+      className={`product-card group relative cursor-pointer transition-transform ${className}`}
+      data-testid="product-card"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.04 }}
+      tabIndex={0}
+      aria-label={product.name}
+    >
+      {/* Out of stock overlay */}
+      {product.inventory_count === 0 && (
+        <div className="absolute inset-0 bg-black/60 text-white flex items-center justify-center rounded-2xl z-10" data-testid="out-of-stock-overlay">
+          <span className="font-bold text-lg">Out of Stock</span>
+        </div>
+      )}
+      {/* Badge */}
+      {badge && (
+        <span className="absolute top-3 left-3 bg-brand-accent text-white text-xs px-2 py-1 rounded z-20" data-testid="product-badge">
+          {badge}
+        </span>
+      )}
+      {/* Product Image */}
+      <div className="relative aspect-square w-full rounded-xl overflow-hidden">
+        <Image
+          src={imageUrl}
           alt={product.name}
-          className="aspect-square w-full rounded-xl object-cover transition-all duration-300 group-hover:brightness-110"
+          fill
+          className="product-image object-cover group-hover:brightness-110 transition"
+          sizes="(max-width: 640px) 100vw, 33vw"
+          priority={false}
+          data-testid="product-image"
         />
-
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300" />
-
-        {/* Wishlist Button - Top Right */}
-        <div className="absolute top-3 right-3 z-10">
-          <WishlistButton
-            productId={product.id}
-            isSaved={isInWishlist}
-            onToggle={handleWishlistToggle}
-          />
-        </div>
-
-        {/* Stock Status Badge */}
-        {!isInStock && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-xl">
-            <span className="text-white font-bold text-lg">Out of Stock</span>
-          </div>
-        )}
-
-        {/* Low Stock Badge */}
-        {isInStock && product.inventory_count <= 5 && (
-          <div className="absolute top-3 left-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-            Only {product.inventory_count} left
-          </div>
-        )}
+        <div className="product-overlay" />
       </div>
-
       {/* Product Info */}
-      <div className="mt-4 space-y-3">
-        {/* Brand Name */}
-        <p className="text-sm text-gray-500 uppercase tracking-wide font-medium">
-          {brandName}
-        </p>
-
-        {/* Product Name */}
-        <h3 className="text-xl font-semibold text-gray-900 line-clamp-2 min-h-[3rem]">
-          {product.name}
-        </h3>
-
-        {/* Description */}
-        {product.description && (
-          <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
-            {product.description}
-          </p>
-        )}
-
-        {/* Price and Stock Info */}
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-2xl font-bold text-gray-900">
-            {formatPrice(product.price)}
-          </span>
-          <span className="text-sm text-gray-500">
-            {product.inventory_count} in stock
-          </span>
+      <h3 className="heading-3 mt-2 text-brand-primary" data-testid="product-title">
+        {product.name}
+      </h3>
+      <p className="text-brand-primary font-semibold" data-testid="product-price">
+        ${price.toFixed(2)}
+        {userRole === 'admin' || userRole === 'rep' ? (
+          <span className="ml-1 text-xs text-brand-accent">(Wholesale)</span>
+        ) : null}
+      </p>
+      {/* Rating */}
+      {typeof rating === 'number' && (
+        <div className="flex items-center gap-1 mt-1" data-testid="product-rating" aria-label={`Rating: ${rating} out of 5`}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <svg
+              key={i}
+              className={`w-4 h-4 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z" />
+            </svg>
+          ))}
         </div>
-
-        {/* Add to Cart Button */}
-        <button
-          onClick={handleAddToCart}
-          disabled={!isInStock}
-          className={`w-full mt-4 px-5 py-3 rounded-xl font-medium transition-all duration-200 ${
-            isInStock
-              ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          {isInStock ? "Add to Cart" : "Out of Stock"}
-        </button>
-      </div>
-    </article>
+      )}
+      {/* Add to Cart Button */}
+      <button
+        type="button"
+        className={`btn-primary w-full mt-2${isLoading ? ' btn-loading' : ''}`}
+        onClick={handleAddToCart}
+        disabled={isLoading || product.inventory_count === 0}
+        aria-label={`Add ${product.name} to cart`}
+        data-testid="add-to-cart-btn"
+      >
+        {isLoading ? 'Adding...' : 'Add to Cart'}
+      </button>
+      {/* Error Message */}
+      {error && (
+        <p className="text-error text-sm mt-1" role="alert" data-testid="product-error">
+          {error}
+        </p>
+      )}
+    </motion.article>
   );
 };
 
