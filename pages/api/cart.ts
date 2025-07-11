@@ -116,7 +116,8 @@ async function getCart(res: NextApiResponse, userId: string) {
   // Calculate totals
   const total =
     cartItems?.reduce((sum, item) => {
-      const price = item.products?.price || 0;
+      // Handle case where products could be null
+      const price = item.products && item.products.price ? item.products.price : 0;
       return sum + price * item.quantity;
     }, 0) || 0;
 

@@ -24,4 +24,5 @@ export { default as Layout } from './Layout';
 export { default as SearchBar } from './SearchBar';
 export { default as ReviewForm } from './ReviewForm';
 export { default as BrandFilterBar } from './BrandFilterBar';
-export { default as CartModal } from './CartModal'; 
+export { default as CartModal } from './CartModal';
+export { default as ErrorBoundary } from './ErrorBoundary'; 

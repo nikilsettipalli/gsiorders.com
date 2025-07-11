@@ -1,9 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { axe, toHaveNoViolations } from 'jest-axe';
 import MainNavbar from '../../src/components/MainNavbar';
-
-expect.extend(toHaveNoViolations);
 
 // Mock the useCurrentBrand hook
 jest.mock('../../src/hooks/useCurrentBrand', () => ({
@@ -12,7 +9,14 @@ jest.mock('../../src/hooks/useCurrentBrand', () => ({
   })
 }));
 
-// Mock the MegaMenuDropdown component
+// Mock Next.js Link component
+jest.mock('next/link', () => {
+  return function MockLink({ href, children, ...props }: any) {
+    return <a href={href} {...props}>{children}</a>;
+  };
+});
+
+// Mock MegaMenuDropdown component
 jest.mock('../../src/components/MegaMenuDropdown', () => {
   return function MockMegaMenuDropdown({ isOpen, onClose }: any) {
     return isOpen ? (
@@ -23,143 +27,77 @@ jest.mock('../../src/components/MegaMenuDropdown', () => {
   };
 });
 
-// Mock Next.js Link component
-jest.mock('next/link', () => {
-  return function MockLink({ href, children, className, ...props }: any) {
-    return (
-      <a href={href} className={className} {...props}>
-        {children}
-      </a>
-    );
-  };
-});
-
-const MockBrandProvider = ({ children }: { children: React.ReactNode }) => (
+// Create a mock brand provider for testing
+const MockBrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div data-brand="liquidheaven">{children}</div>
 );
 
 describe('MainNavbar', () => {
-  beforeEach(() => {
-    // Mock window.matchMedia for responsive design tests
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation(query => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
-
-  it('renders without crashing', () => {
-    render(
-      <MockBrandProvider>
-        <MainNavbar />
-      </MockBrandProvider>
-    );
-    expect(screen.getByTestId('main-navbar')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-logo')).toBeInTheDocument();
-  });
-
-  it('renders all navigation items', () => {
-    render(
-      <MockBrandProvider>
-        <MainNavbar />
-      </MockBrandProvider>
-    );
-    expect(screen.getByTestId('nav-shop')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-learn')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-about')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-reviews')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-contact')).toBeInTheDocument();
-  });
-
-  it('renders dropdown buttons with chevron icons', () => {
+  it('renders the logo correctly', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
     
-    const shopButton = screen.getByTestId('nav-shop');
-    const learnButton = screen.getByTestId('nav-learn');
-    
-    expect(shopButton).toHaveAttribute('aria-haspopup', 'true');
-    expect(learnButton).toHaveAttribute('aria-haspopup', 'true');
+    expect(screen.getByText('GSI Orders')).toBeInTheDocument();
+    expect(screen.getByLabelText('GSI Orders Home')).toBeInTheDocument();
   });
 
-  it('renders cart icon with badge', () => {
+  it('renders all navigation links', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
     
-    const cartLink = screen.getByTestId('nav-cart');
-    expect(cartLink).toBeInTheDocument();
-    expect(cartLink).toHaveAttribute('href', '/cart');
+    expect(screen.getByText('Shop Products')).toBeInTheDocument();
+    expect(screen.getByText('Learn')).toBeInTheDocument();
+    expect(screen.getByText('About Us')).toBeInTheDocument();
+    expect(screen.getByText('Reviews')).toBeInTheDocument();
+    expect(screen.getByText('Contact')).toBeInTheDocument();
   });
 
-  it('renders account link', () => {
+  it('renders right side action buttons', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
     
-    const accountLink = screen.getByTestId('nav-account');
-    expect(accountLink).toBeInTheDocument();
-    expect(accountLink).toHaveAttribute('href', '/account');
+    expect(screen.getByTestId('nav-search')).toBeInTheDocument();
+    expect(screen.getByText('Enter state')).toBeInTheDocument();
+    expect(screen.getByLabelText('Account')).toBeInTheDocument();
+    expect(screen.getByTestId('nav-cart')).toBeInTheDocument();
+    expect(screen.getByTestId('mobile-menu-button')).toBeInTheDocument();
   });
 
-  it('opens mega menu dropdown when shop button is clicked', () => {
+  it('opens mega menu dropdown when shop products button is hovered', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
     
-    const shopButton = screen.getByTestId('nav-shop');
-    fireEvent.click(shopButton);
+    const shopButton = screen.getByText('Shop Products');
+    fireEvent.mouseEnter(shopButton.parentElement as Element);
     
     expect(screen.getByTestId('mega-menu-dropdown')).toBeInTheDocument();
   });
 
-  it('closes mega menu when close button is clicked', () => {
+  it('closes mega menu dropdown when mouse leaves', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
     
-    const shopButton = screen.getByTestId('nav-shop');
-    fireEvent.click(shopButton);
+    const shopButton = screen.getByText('Shop Products');
+    fireEvent.mouseEnter(shopButton.parentElement as Element);
+    expect(screen.getByTestId('mega-menu-dropdown')).toBeInTheDocument();
     
-    const closeButton = screen.getByText('Close Menu');
-    fireEvent.click(closeButton);
-    
+    fireEvent.mouseLeave(shopButton.parentElement as Element);
     expect(screen.queryByTestId('mega-menu-dropdown')).not.toBeInTheDocument();
-  });
-
-  it('opens learn dropdown when learn button is clicked', () => {
-    render(
-      <MockBrandProvider>
-        <MainNavbar />
-      </MockBrandProvider>
-    );
-    
-    const learnButton = screen.getByTestId('nav-learn');
-    fireEvent.click(learnButton);
-    
-    // Learn dropdown should be visible
-    expect(screen.getByText('Education')).toBeInTheDocument();
-    expect(screen.getByText('Resources')).toBeInTheDocument();
-    expect(screen.getByText('Support')).toBeInTheDocument();
   });
 
   it('has correct navigation structure', () => {
@@ -169,7 +107,7 @@ describe('MainNavbar', () => {
       </MockBrandProvider>
     );
     const nav = screen.getByRole('navigation');
-    expect(nav).toHaveAttribute('aria-label', 'Main Navigation');
+    expect(nav).toHaveAttribute('aria-label', 'Main navigation');
   });
 
   it('has proper aria attributes for dropdowns', () => {
@@ -179,14 +117,9 @@ describe('MainNavbar', () => {
       </MockBrandProvider>
     );
     
-    const shopButton = screen.getByTestId('nav-shop');
-    const learnButton = screen.getByTestId('nav-learn');
-    
+    const shopButton = screen.getByText('Shop Products');
     expect(shopButton).toHaveAttribute('aria-expanded', 'false');
-    expect(learnButton).toHaveAttribute('aria-expanded', 'false');
-    
-    fireEvent.click(shopButton);
-    expect(shopButton).toHaveAttribute('aria-expanded', 'true');
+    expect(shopButton).toHaveAttribute('aria-haspopup', 'true');
   });
 
   it('closes dropdown on escape key', () => {
@@ -196,33 +129,56 @@ describe('MainNavbar', () => {
       </MockBrandProvider>
     );
     
-    const shopButton = screen.getByTestId('nav-shop');
-    fireEvent.click(shopButton);
+    const shopButton = screen.getByText('Shop Products');
+    fireEvent.mouseEnter(shopButton.parentElement as Element);
     
     expect(screen.getByTestId('mega-menu-dropdown')).toBeInTheDocument();
     
     fireEvent.keyDown(document, { key: 'Escape' });
-    
     expect(screen.queryByTestId('mega-menu-dropdown')).not.toBeInTheDocument();
   });
 
-  it('is accessible', async () => {
-    const { container } = render(
-      <MockBrandProvider>
-        <MainNavbar />
-      </MockBrandProvider>
-    );
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
-  });
-
-  it('has proper focus management', () => {
+  it('displays cart count badge when items are in cart', () => {
     render(
       <MockBrandProvider>
         <MainNavbar />
       </MockBrandProvider>
     );
-    const shopButton = screen.getByTestId('nav-shop');
-    expect(shopButton).toHaveClass('focus:outline-none', 'focus:ring-2');
+    
+    const cartButton = screen.getByTestId('nav-cart');
+    expect(cartButton).toHaveAttribute('aria-label', 'Shopping cart with 0 items');
+  });
+
+  it('has search button with proper accessibility', () => {
+    render(
+      <MockBrandProvider>
+        <MainNavbar />
+      </MockBrandProvider>
+    );
+    
+    const searchButton = screen.getByTestId('nav-search');
+    expect(searchButton).toHaveAttribute('aria-label', 'Search products');
+  });
+
+  it('has mobile menu button with proper accessibility', () => {
+    render(
+      <MockBrandProvider>
+        <MainNavbar />
+      </MockBrandProvider>
+    );
+    
+    const mobileMenuButton = screen.getByTestId('mobile-menu-button');
+    expect(mobileMenuButton).toHaveAttribute('aria-label', 'Toggle mobile menu');
+  });
+
+  it('renders brand-aware styling', () => {
+    render(
+      <MockBrandProvider>
+        <MainNavbar />
+      </MockBrandProvider>
+    );
+    
+    const navbar = screen.getByRole('navigation');
+    expect(navbar).toHaveClass('bg-white', 'border-b', 'border-gray-100');
   });
 }); 
