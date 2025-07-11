@@ -139,7 +139,11 @@ const MainNavbar: React.FC = () => {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-3">
             {/* Search Icon */}
-            <button className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200">
+            <button 
+              className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200"
+              aria-label="Search products"
+              data-testid="nav-search"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -170,7 +174,11 @@ const MainNavbar: React.FC = () => {
             </Link>
 
             {/* Mobile Menu Button */}
-            <button className="lg:hidden p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200">
+            <button 
+              className="lg:hidden p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200"
+              aria-label="Open mobile menu"
+              data-testid="nav-mobile-menu"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>

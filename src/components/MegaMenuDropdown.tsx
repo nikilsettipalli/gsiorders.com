@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCurrentBrand } from '../hooks/useCurrentBrand';
 
@@ -7,8 +7,72 @@ interface MegaMenuDropdownProps {
   onClose: () => void;
 }
 
+// Category image mapping
+const categoryImages = {
+  default: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format",
+  beverages: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=400&fit=crop&auto=format",
+  tinctures: "https://images.unsplash.com/photo-1615671524827-c1fe3973b648?w=400&h=400&fit=crop&auto=format",
+  topicals: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop&auto=format",
+  concentrates: "https://images.unsplash.com/photo-1618177707446-3b4ba094717d?w=400&h=400&fit=crop&auto=format",
+  'sexual-enhancers': "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&auto=format"
+};
+
 const MegaMenuDropdown: React.FC<MegaMenuDropdownProps> = ({ isOpen, onClose }) => {
   const { brand } = useCurrentBrand();
+  const [currentImage, setCurrentImage] = useState(categoryImages.default);
+  const [imageLoaded, setImageLoaded] = useState(true);
+  const [preloadedImages, setPreloadedImages] = useState<{ [key: string]: boolean }>({});
+
+  // Preload all category images when component mounts
+  useEffect(() => {
+    const preloadImages = async () => {
+      const imagePromises = Object.entries(categoryImages).map(([key, src]) => {
+        return new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            setPreloadedImages(prev => ({ ...prev, [key]: true }));
+            resolve();
+          };
+          img.onerror = () => {
+            setPreloadedImages(prev => ({ ...prev, [key]: false }));
+            resolve();
+          };
+          img.src = src;
+        });
+      });
+      
+      await Promise.all(imagePromises);
+    };
+
+    if (isOpen) {
+      preloadImages();
+    }
+  }, [isOpen]);
+
+  // Handle category hover with smooth image switching
+  const handleCategoryHover = (category: string) => {
+    const imageKey = category.toLowerCase().replace(/\s+/g, '-') as keyof typeof categoryImages;
+    const newImage = categoryImages[imageKey] || categoryImages.default;
+    
+    if (newImage !== currentImage) {
+      setImageLoaded(false);
+      setTimeout(() => {
+        setCurrentImage(newImage);
+        setImageLoaded(true);
+      }, 150); // Half of transition duration for smooth fade
+    }
+  };
+
+  // Reset to default image when leaving category area
+  const handleCategoryLeave = () => {
+    if (currentImage !== categoryImages.default) {
+      setImageLoaded(false);
+      setTimeout(() => {
+        setCurrentImage(categoryImages.default);
+        setImageLoaded(true);
+      }, 150);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -35,24 +99,25 @@ const MegaMenuDropdown: React.FC<MegaMenuDropdownProps> = ({ isOpen, onClose }) 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
             {/* Column 1: Shop by Category */}
-            <div className="space-y-4">
+            <div className="space-y-4" onMouseLeave={handleCategoryLeave}>
               <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">
                 Shop by Category
               </h3>
               <ul className="space-y-3">
                 {[
-                  { label: 'Beverages', href: '/products?category=beverages' },
-                  { label: 'Tinctures', href: '/products?category=tinctures' },
-                  { label: 'Topicals', href: '/products?category=topicals' },
-                  { label: 'Concentrates', href: '/products?category=concentrates' },
-                  { label: 'Sexual Enhancers', href: '/products?category=sexual-enhancers' },
-                  { label: 'All Products', href: '/products' }
+                  { label: 'Beverages', href: '/products?category=beverages', key: 'beverages' },
+                  { label: 'Tinctures', href: '/products?category=tinctures', key: 'tinctures' },
+                  { label: 'Topicals', href: '/products?category=topicals', key: 'topicals' },
+                  { label: 'Concentrates', href: '/products?category=concentrates', key: 'concentrates' },
+                  { label: 'Sexual Enhancers', href: '/products?category=sexual-enhancers', key: 'sexual-enhancers' },
+                  { label: 'All Products', href: '/products', key: 'default' }
                 ].map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="block text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 px-3 py-2 rounded-lg transition-all duration-200 font-medium"
+                      className="block text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 hover:scale-105 px-3 py-2 rounded-lg transition-all duration-200 font-medium transform"
                       onClick={onClose}
+                      onMouseEnter={() => handleCategoryHover(item.key)}
                     >
                       {item.label}
                     </Link>
@@ -172,13 +237,20 @@ const MegaMenuDropdown: React.FC<MegaMenuDropdownProps> = ({ isOpen, onClose }) 
                 ))}
               </ul>
               
-              {/* Cannabis Plant Image */}
+              {/* Dynamic Cannabis Image */}
               <div className="mt-6 hidden lg:block">
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=150&fit=crop&auto=format"
+                    src={currentImage}
                     alt="Premium cannabis products"
-                    className="w-full h-32 object-cover rounded-xl shadow-lg"
+                    className={`w-full h-32 object-cover rounded-xl shadow-lg transition-opacity duration-300 ease-in-out ${
+                      imageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => {
+                      setCurrentImage(categoryImages.default);
+                      setImageLoaded(true);
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
                   <div className="absolute bottom-3 left-3 text-white">
