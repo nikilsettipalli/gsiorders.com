@@ -2,35 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-// Types
-interface CartItem {
-  id: string;
-  user_id: string;
-  product_id: string;
-  quantity: number;
-  created_at: string;
-  updated_at: string;
-  // Joined product data
-  products: {
-    id: string;
-    name: string;
-    price: number;
-    images: string[] | null;
-    inventory_count: number;
-    brands: {
-      name: string;
-      slug: string;
-    } | null;
-  } | null;
-}
-
-interface CartResponse {
-  items: CartItem[];
-  total: number;
-  itemCount: number;
-}
-
-// 🔥 FIXED: Use service key with proper configuration
+// Use service role key for backend operations
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_KEY!,
@@ -43,42 +15,76 @@ const supabase = createClient(
   }
 );
 
+interface CartItem {
+  id: string;
+  user_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+  // Joined product data (Supabase returns this as a single object, not array when using foreign key relationship)
+  products: {
+    id: any;
+    name: any;
+    price: any;
+    images: any;
+    inventory_count: any;
+    brands: {
+      name: any;
+      slug: any;
+    }[];
+  } | null;
+}
+
+interface CartResponse {
+  items: CartItem[];
+  total: number;
+  itemCount: number;
+}
+
+// Constants
+const TEST_USER_ID = '123e4567-e89b-12d3-a456-426614174000';
+
+// Utility function to get user ID (for now, always use test user)
+function getUserId(req: NextApiRequest): string {
+  // In the future, this will extract from auth token
+  // For now, use test user ID
+  return TEST_USER_ID;
+}
+
+// Main handler
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CartResponse | { error: string; message?: string }>
 ) {
-  // For now, we'll use the test user ID - in production this comes from auth session
-  // TODO: Replace with real auth session: const { data: { user } } = await supabase.auth.getUser()
-  const userId = "123e4567-e89b-12d3-a456-426614174000";
-
-  if (!userId) {
-    return res.status(401).json({ error: "Authentication required" });
-  }
+  const userId = getUserId(req);
 
   try {
     switch (req.method) {
-      case "GET":
+      case 'GET':
         return await getCart(res, userId);
-
-      case "POST":
+      case 'POST':
         return await addToCart(req, res, userId);
-
-      case "PUT":
+      case 'PUT':
         return await updateCartItem(req, res, userId);
-
-      case "DELETE":
+      case 'DELETE':
         return await removeFromCart(req, res, userId);
-
       default:
-        return res.status(405).json({ error: "Method not allowed" });
+        return res.status(405).json({
+          error: 'Method not allowed',
+          message: `${req.method} is not supported`,
+        });
     }
-  } catch (error: any) {
-    console.error("❌ Cart API error:", error);
-    res.status(500).json({ error: "Internal server error" });
+  } catch (error) {
+    console.error('❌ Cart API Error:', error);
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+    });
   }
 }
 
-// GET /api/cart - Fetch user's cart
+// GET /api/cart - Get user's cart
 async function getCart(res: NextApiResponse, userId: string) {
   console.log(`📋 Fetching cart for user: ${userId}`);
 
@@ -116,8 +122,8 @@ async function getCart(res: NextApiResponse, userId: string) {
   // Calculate totals
   const total =
     cartItems?.reduce((sum, item) => {
-      // Handle case where products could be null
-      const price = item.products && item.products.price ? item.products.price : 0;
+      // Handle case where products could be null using optional chaining
+      const price = (item.products as any)?.price ?? 0;
       return sum + price * item.quantity;
     }, 0) || 0;
 
@@ -317,9 +323,7 @@ async function removeFromCart(
       return res.status(500).json({ error: "Failed to clear cart" });
     }
 
-    console.log(`✅ Cleared entire cart for user: ${userId}`);
-
-    // Return empty cart
+    console.log(`✅ Cart cleared for user: ${userId}`);
     return res.status(200).json({
       items: [],
       total: 0,
@@ -327,8 +331,8 @@ async function removeFromCart(
     });
   }
 
-  // Original individual item removal logic
-  console.log(`🗑️ Removing from cart: ${product_id} for user: ${userId}`);
+  // Remove specific item
+  console.log(`🗑️ Removing item ${product_id} from cart for user: ${userId}`);
 
   const { error } = await supabase
     .from("cart_items")
@@ -337,11 +341,11 @@ async function removeFromCart(
     .eq("product_id", product_id);
 
   if (error) {
-    console.error("❌ Error removing from cart:", error);
-    return res.status(500).json({ error: "Failed to remove from cart" });
+    console.error("❌ Error removing cart item:", error);
+    return res.status(500).json({ error: "Failed to remove item" });
   }
 
-  console.log(`✅ Removed from cart: ${product_id}`);
+  console.log(`✅ Removed item ${product_id} from cart`);
 
   // Return updated cart
   return await getCart(res, userId);

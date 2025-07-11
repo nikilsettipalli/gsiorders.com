@@ -18,156 +18,284 @@ const MegaMenuDropdown: React.FC<MegaMenuDropdownProps> = ({ isOpen, onClose }) 
             <img
               src="https://images.unsplash.com/photo-1536424813622-0d64ba88dc74?w=300&h=400&fit=crop&auto=format"
               alt="Premium Cannabis"
-              className="w-full h-80 object-cover rounded-lg shadow-md"
+              className="w-full h-80 object-cover rounded-xl shadow-lg"
             />
           </div>
 
-          {/* Shop by Category */}
+          {/* SHOP BY CATEGORY */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
               SHOP BY CATEGORY
             </h3>
             <ul className="space-y-3">
-              {[
-                'Gummies',
-                'Flower', 
-                'Edibles',
-                'Beverages',
-                'Pre-Rolls',
-                'Concentrates',
-                'Vapes',
-                'Merch',
-                'All Products'
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href={`/products?category=${item.toLowerCase().replace(' ', '-')}`}
-                    className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-sm"
-                    onClick={onClose}
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/products?category=beverages" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Beverages
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?category=rtds" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  RTD's
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?category=tinctures" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Tinctures
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?category=creams" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Creams
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?category=sexual-enhancers" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Sexual Enhancers
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?category=cbd-shampoo" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  CBD Shampoo
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products" 
+                  className="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  All Products
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Shop by Mood */}
+          {/* SHOP BY MOOD */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
               SHOP BY MOOD
             </h3>
             <ul className="space-y-3">
-              {[
-                'Aroused',
-                'Sleepy',
-                'Classic High',
-                'Happy',
-                'Energized',
-                'Chill',
-                'Soothing',
-                'Focused',
-                'Creative',
-                'Social'
-              ].map((mood) => (
-                <li key={mood}>
-                  <Link
-                    href={`/products?mood=${mood.toLowerCase().replace(' ', '-')}`}
-                    className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-sm"
-                    onClick={onClose}
-                  >
-                    {mood}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/products?mood=aroused" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Aroused
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=sleepy" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Sleepy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=classic-high" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Classic High
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=happy" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Happy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=energized" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Energized
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=chill" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Chill
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=soothing" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Soothing
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=focused" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Focused
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=creative" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Creative
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?mood=social" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Social
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Shop by Potency */}
+          {/* SHOP BY POTENCY */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
               SHOP BY POTENCY
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li>
-                <Link
-                  href="/products?potency=mild"
-                  className="block hover:text-emerald-600 transition-colors duration-200"
+                <Link 
+                  href="/products?potency=mild" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1 flex items-center gap-2"
                   onClick={onClose}
                 >
-                  <div className="text-gray-600 text-sm mb-1">Mild Potency</div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                  Mild Potency
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                   </div>
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/products?potency=medium"
-                  className="block hover:text-emerald-600 transition-colors duration-200"
+                <Link 
+                  href="/products?potency=medium" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1 flex items-center gap-2"
                   onClick={onClose}
                 >
-                  <div className="text-gray-600 text-sm mb-1">Medium Potency</div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                  Medium Potency
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                   </div>
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/products?potency=high"
-                  className="block hover:text-emerald-600 transition-colors duration-200"
+                <Link 
+                  href="/products?potency=high" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1 flex items-center gap-2"
                   onClick={onClose}
                 >
-                  <div className="text-gray-600 text-sm mb-1">High Potency</div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
+                  High Potency
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
                   </div>
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* More */}
+          {/* MORE */}
           <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
               MORE
             </h3>
             <ul className="space-y-3">
-              {[
-                'Best Sellers',
-                'New',
-                'Bundles',
-                'Summer Collection',
-                'Mindful Bakery'
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href={`/products?collection=${item.toLowerCase().replace(' ', '-')}`}
-                    className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-sm"
-                    onClick={onClose}
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link 
+                  href="/products?featured=best-sellers" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Best Sellers
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?featured=new" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  New
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?featured=bundles" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Bundles
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?featured=summer-collection" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Summer Collection
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/products?featured=mindful-bakery" 
+                  className="text-gray-600 hover:text-emerald-600 transition-colors block py-1"
+                  onClick={onClose}
+                >
+                  Mindful Bakery
+                </Link>
+              </li>
             </ul>
-
-            {/* Promotional Banner */}
-            <div className="mt-6 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-              <div className="text-emerald-800 font-semibold text-sm mb-1">
-                New Customer?
-              </div>
-              <div className="text-emerald-600 text-sm">
-                Get 20% Off Your First Order
-              </div>
-            </div>
           </div>
         </div>
       </div>
