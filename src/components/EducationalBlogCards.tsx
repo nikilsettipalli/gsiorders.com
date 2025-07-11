@@ -3,22 +3,22 @@ import Image from 'next/image';
 
 const blogPosts = [
   {
-    title: 'Mixology 101: Crafting the Perfect Cocktail',
-    summary: 'Learn the basics of mixing drinks and impress your guests with pro tips.',
-    image: '/blog-mixology.jpg',
-    href: '/blog/mixology-101',
+    title: 'CBD 101: Understanding Bioavailability',
+    summary: 'Learn how our Amrit water-soluble technology enhances CBD absorption for maximum benefits.',
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop&auto=format',
+    href: '/blog/cbd-bioavailability',
   },
   {
-    title: 'Non-Alcoholic Beverages for Every Occasion',
-    summary: 'Discover delicious alcohol-free options for parties, brunch, and more.',
-    image: '/blog-nonalc.jpg',
-    href: '/blog/non-alcoholic-beverages',
+    title: 'Dosage Guide: Finding Your Perfect Dose',
+    summary: 'Discover how to determine the right CBD dosage for your wellness goals and lifestyle.',
+    image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&h=250&fit=crop&auto=format',
+    href: '/blog/dosage-guide',
   },
   {
-    title: 'Sustainable Sourcing: Our Commitment',
-    summary: 'How GSI Orders partners with eco-friendly suppliers and brands.',
-    image: '/blog-sustain.jpg',
-    href: '/blog/sustainable-sourcing',
+    title: 'Sustainable Hemp: Our Commitment to Quality',
+    summary: 'How GSI Orders partners with eco-friendly farms for premium, sustainable hemp products.',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=250&fit=crop&auto=format',
+    href: '/blog/sustainable-hemp',
   },
 ];
 

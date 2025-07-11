@@ -6,7 +6,12 @@ import {
   MainNavbar,
   Footer,
   ErrorBoundary,
-  ProductCard
+  ProductCard,
+  ComplianceGrid,
+  CustomerSupportCard,
+  EducationalBlogCards,
+  ReviewHighlight,
+  FarmerStorySection
 } from '../src/components';
 
 // Product data based on user requirements
@@ -288,6 +293,79 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust & Education Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
+                Why Choose 
+                <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent"> GSI Orders</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Experience the difference of premium quality, rigorous testing, and unmatched customer service
+              </p>
+            </div>
+
+            {/* Compliance & Quality Grid */}
+            <div className="mb-16">
+              <ComplianceGrid />
+            </div>
+
+            {/* Customer Review Highlight */}
+            <div className="mb-16">
+              <ReviewHighlight 
+                review="GSI Orders exceeded my expectations! The Amrit technology really makes a difference in absorption. Fast shipping and incredible customer service."
+                reviewer="Sarah M."
+                rating={5}
+              />
+            </div>
+
+            {/* Two-Column Section: Farmer Story + Customer Support */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+              <FarmerStorySection 
+                name="Premium Partners Network"
+                story="We partner with the finest farms and distilleries across the country, ensuring every product meets our strict quality standards. From Liquid Heaven's CBD farms to Motaquila's premium agave fields, we source only the best."
+                imageUrl="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=150&h=150&fit=crop&auto=format"
+              />
+              <CustomerSupportCard />
+            </div>
+
+            {/* Educational Blog Cards */}
+            <div className="mb-8">
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-black text-gray-900 mb-4">Learn & Discover</h3>
+                <p className="text-lg text-gray-600">
+                  Stay informed with our expert guides and educational content
+                </p>
+              </div>
+              <EducationalBlogCards />
+            </div>
+
+            {/* Additional Trust Indicators */}
+            <div className="bg-white rounded-3xl p-8 shadow-lg">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div className="space-y-2">
+                  <div className="text-3xl font-black text-emerald-600">50K+</div>
+                  <div className="text-sm text-gray-600 font-medium">Happy Customers</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-black text-blue-600">99.8%</div>
+                  <div className="text-sm text-gray-600 font-medium">Customer Satisfaction</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-black text-purple-600">24/7</div>
+                  <div className="text-sm text-gray-600 font-medium">Customer Support</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-black text-pink-600">100%</div>
+                  <div className="text-sm text-gray-600 font-medium">Quality Guarantee</div>
                 </div>
               </div>
             </div>

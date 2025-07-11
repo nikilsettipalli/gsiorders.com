@@ -3,18 +3,18 @@ import React from 'react';
 const compliancePoints = [
   {
     icon: '🛡️',
-    title: 'Alcohol Compliance',
-    desc: 'All products meet federal and state beverage regulations.'
+    title: 'FDA Compliant',
+    desc: 'All CBD products comply with federal regulations and contain <0.3% THC.'
   },
   {
     icon: '🔬',
-    title: 'Lab Tested',
-    desc: 'Every batch is independently tested for quality and safety.'
+    title: 'Third-Party Lab Tested',
+    desc: 'Every batch is independently tested for potency, pesticides, and heavy metals.'
   },
   {
     icon: '🇺🇸',
     title: 'Made in USA',
-    desc: 'Crafted and packaged in certified US facilities.'
+    desc: 'Crafted in certified facilities with premium American-grown hemp.'
   },
 ];
 

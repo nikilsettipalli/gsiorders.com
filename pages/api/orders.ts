@@ -102,34 +102,9 @@ async function getOrders(
   let query = supabase
     .from("orders")
     .select(
-      `
-      id,
-      user_id,
-      total,
-      status,
-      created_at
-      ${
-        includeItems
-          ? `,
-      order_items (
-        id,
-        order_id,
-        product_id,
-        quantity,
-        price,
-        products (
-          id,
-          name,
-          images,
-          brands (
-            name,
-            slug
-          )
-        )
-      )`
-          : ""
-      }
-    `
+      includeItems
+        ? `id, user_id, total, status, created_at, order_items(id, order_id, product_id, quantity, price, products(id, name, images, brands(name, slug)))`
+        : `id, user_id, total, status, created_at`
     )
     .eq("user_id", userId);
 
@@ -161,7 +136,7 @@ async function getOrders(
   console.log(`✅ Found ${orders?.length || 0} orders (${total} total)`);
 
   const response: OrdersResponse = {
-    orders: orders || [],
+    orders: (orders as Order[]) || [],
     total,
     page: pageNum,
     limit: limitNum,
