@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface FarmerStorySectionProps {
   name?: string;
@@ -9,31 +9,33 @@ interface FarmerStorySectionProps {
 }
 
 const FarmerStorySection: React.FC<FarmerStorySectionProps> = ({
-  name = 'Sierra Valley Distillers',
-  story = 'Our award-winning partners in California craft small-batch beverages with a focus on quality, sustainability, and local ingredients.',
-  imageUrl = '/farmer-placeholder.jpg',
+  name = 'Premium Partner Network',
+  story = 'We partner with the finest farms and manufacturers across the country, ensuring every product meets our strict quality standards. From CBD farms to wellness product facilities, we source only the best.',
+  imageUrl = '',
   className = '',
 }) => (
-  <section
-    className={`flex flex-col sm:flex-row items-center bg-white rounded-2xl shadow p-6 gap-6 my-8 ${className}`}
-    aria-label="Supplier Highlight"
-    data-testid="farmer-story-section"
-  >
-    <div className="w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 mb-4 sm:mb-0">
-      <Image
-        src={imageUrl}
-        alt={name}
-        width={128}
-        height={128}
-        className="object-cover w-full h-full"
-        data-testid="farmer-image"
-      />
-    </div>
-    <div className="flex-1">
-      <h3 className="text-xl font-bold text-brand-primary mb-1" data-testid="farmer-name">{name}</h3>
-      <p className="text-gray-700" data-testid="farmer-story">{story}</p>
-    </div>
-  </section>
+  <Card className={`${className}`}>
+    <CardContent className="p-8">
+      <div className="flex flex-col sm:flex-row items-start gap-6">
+        {/* Image replacement with colored div */}
+        <div className="w-32 h-32 sm:w-24 sm:h-24 lg:w-32 lg:h-32 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center flex-shrink-0">
+          <div className="text-center text-white">
+            <div className="text-4xl mb-1">🏭</div>
+            <div className="text-xs font-semibold opacity-90">Partners</div>
+          </div>
+        </div>
+        
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
+            {name}
+          </h3>
+          <p className="text-gray-600 leading-relaxed">
+            {story}
+          </p>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
 );
 
 export default FarmerStorySection; 
