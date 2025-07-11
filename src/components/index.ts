@@ -11,6 +11,7 @@ export { default as UseCaseFilterBar } from './UseCaseFilterBar';
 export { default as CategoryGrid } from './CategoryGrid';
 export { default as LocationGateModal } from './LocationGateModal';
 export { default as MainNavbar } from './MainNavbar';
+export { default as MegaMenuDropdown } from './MegaMenuDropdown';
 export { default as TopBanner } from './TopBanner';
 export { default as ProductCard } from './ProductCard';
 export { default as WishlistButton } from './WishlistButton';
