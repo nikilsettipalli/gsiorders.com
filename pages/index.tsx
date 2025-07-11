@@ -5,7 +5,8 @@ import { useCurrentBrand } from '../src/hooks/useCurrentBrand';
 import {
   MainNavbar,
   Footer,
-  ErrorBoundary
+  ErrorBoundary,
+  ProductCard
 } from '../src/components';
 
 // Product data based on user requirements
@@ -21,22 +22,22 @@ const categoryData = {
       {
         name: 'Liquid Heaven',
         skus: [
-          { id: 1, name: 'CBD Energy Drink', price: '$12.99', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High' },
-          { id: 2, name: 'Relaxation Tea', price: '$15.99', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=300&fit=crop&auto=format', rating: 4.6, potency: 'Medium' },
+          { id: 1, name: 'CBD Energy Drink', price: '$12.99', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High', isBestSeller: true },
+          { id: 2, name: 'Relaxation Tea', price: '$15.99', image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&h=300&fit=crop&auto=format', rating: 4.6, potency: 'Medium', isNew: true },
           { id: 3, name: 'Morning Boost Coffee', price: '$18.99', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&auto=format', rating: 4.9, potency: 'High' },
           { id: 4, name: 'CBD Lemonade', price: '$9.99', image: 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=300&h=300&fit=crop&auto=format', rating: 4.7, potency: 'Low' },
           { id: 5, name: 'Herbal Smoothie', price: '$14.99', image: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=300&h=300&fit=crop&auto=format', rating: 4.5, potency: 'Medium' },
-          { id: 6, name: 'Green Juice Blend', price: '$16.99', image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High' },
+          { id: 6, name: 'Green Juice Blend', price: '$16.99', image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High', isLimitedEdition: true },
           { id: 7, name: 'Wellness Water', price: '$8.99', image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&auto=format', rating: 4.4, potency: 'Low' },
-          { id: 8, name: 'Power Protein Shake', price: '$19.99', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=300&fit=crop&auto=format', rating: 4.9, potency: 'High' }
+          { id: 8, name: 'Power Protein Shake', price: '$19.99', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=300&h=300&fit=crop&auto=format', rating: 4.9, potency: 'High', isNew: true }
         ]
       },
       {
         name: 'Motaquila',
         skus: [
-          { id: 9, name: 'Premium Tequila Infusion', price: '$89.99', image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&auto=format', rating: 4.9, potency: 'High' },
+          { id: 9, name: 'Premium Tequila Infusion', price: '$89.99', image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&auto=format', rating: 4.9, potency: 'High', isLimitedEdition: true },
           { id: 10, name: 'Craft Cocktail Mix', price: '$45.99', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop&auto=format', rating: 4.7, potency: 'Medium' },
-          { id: 11, name: 'Agave Spirit Blend', price: '$67.99', image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High' }
+          { id: 11, name: 'Agave Spirit Blend', price: '$67.99', image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High', isBestSeller: true }
         ]
       }
     ]
@@ -47,8 +48,8 @@ const categoryData = {
       {
         name: 'Genie',
         skus: [
-          { id: 12, name: 'Libido Boost Gummies', price: '$39.99', image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High' },
-          { id: 13, name: 'Passion Enhancement Oil', price: '$49.99', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=300&h=300&fit=crop&auto=format', rating: 4.6, potency: 'Medium' }
+          { id: 12, name: 'Libido Boost Gummies', price: '$39.99', image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=300&h=300&fit=crop&auto=format', rating: 4.8, potency: 'High', isBestSeller: true },
+          { id: 13, name: 'Passion Enhancement Oil', price: '$49.99', image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=300&h=300&fit=crop&auto=format', rating: 4.6, potency: 'Medium', isNew: true }
         ]
       }
     ]
@@ -484,60 +485,31 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Products Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {/* Products Grid - Enhanced with ProductCard */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {getFilteredProducts().map((product) => (
-                  <div
+                  <ProductCard
                     key={product.id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                  >
-                    <div className="relative">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="absolute top-3 left-3 flex flex-col gap-2">
-                        <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          {product.brandName}
-                        </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          product.potency === 'High' ? 'bg-red-100 text-red-700' :
-                          product.potency === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-green-100 text-green-700'
-                        }`}>
-                          {product.potency}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center mb-3">
-                        <div className="flex text-yellow-400 text-sm">
-                          {[...Array(5)].map((_, i) => (
-                            <svg
-                              key={i}
-                              className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-gray-300'}`}
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))}
-                        </div>
-                        <span className="text-gray-600 text-sm ml-2">({product.rating})</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-gray-900">
-                          {product.price}
-                        </span>
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200">
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                    product={{
+                      id: product.id.toString(),
+                      name: product.name,
+                      price: parseFloat(product.price.replace('$', '')),
+                      images: [product.image],
+                      inventory_count: 25, // Default inventory count
+                      brands: { name: product.brandName, slug: product.brandName.toLowerCase().replace(' ', '-') },
+                      rating: product.rating,
+                      isNew: product.isNew || false,
+                      isBestSeller: product.isBestSeller || false,
+                      isLimitedEdition: product.isLimitedEdition || false,
+                      category: product.category
+                    }}
+                    userRole="user"
+                    onQuickView={(productId) => {
+                      // TODO: Implement quick view modal
+                      console.log('Quick view for product:', productId);
+                    }}
+                    className="transform transition-all duration-300"
+                  />
                 ))}
               </div>
 
