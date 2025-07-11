@@ -25,4 +25,5 @@ export { default as SearchBar } from './SearchBar';
 export { default as ReviewForm } from './ReviewForm';
 export { default as BrandFilterBar } from './BrandFilterBar';
 export { default as CartModal } from './CartModal';
+export { default as CheckoutForm } from './CheckoutForm';
 export { default as ErrorBoundary } from './ErrorBoundary'; 

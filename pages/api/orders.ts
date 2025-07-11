@@ -135,8 +135,11 @@ async function getOrders(
 
   console.log(`✅ Found ${orders?.length || 0} orders (${total} total)`);
 
+  // Type guard to ensure orders is valid
+  const validOrders = Array.isArray(orders) ? (orders as unknown as Order[]) : [];
+
   const response: OrdersResponse = {
-    orders: (orders as Order[]) || [],
+    orders: validOrders,
     total,
     page: pageNum,
     limit: limitNum,
