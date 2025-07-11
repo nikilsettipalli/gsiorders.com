@@ -59,7 +59,7 @@ const HomePage: React.FC = () => {
       <Head>
         <title>GSI Orders - Premium CBD & Wellness Products</title>
         <meta name="description" content="One unified platform for premium CBD, wellness products, and beverages. D2C & wholesale solutions." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -98,7 +98,7 @@ const HomePage: React.FC = () => {
               {/* Liquid Heaven Brand */}
               <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover:opacity-90 focus:ring-2 focus:ring-brand-accent">
                 <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-emerald-500 rounded-full mx-auto mb-6 flex items-center justify-center">
                     <span className="text-3xl">🌿</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Liquid Heaven</h3>
@@ -114,7 +114,7 @@ const HomePage: React.FC = () => {
               {/* Motaquila Brand */}
               <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover:opacity-90 focus:ring-2 focus:ring-brand-accent">
                 <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center">
                     <span className="text-3xl">🍹</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Motaquila</h3>
@@ -130,7 +130,7 @@ const HomePage: React.FC = () => {
               {/* Last Genie Brand */}
               <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover:opacity-90 focus:ring-2 focus:ring-brand-accent sm:col-span-2 lg:col-span-1">
                 <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-indigo-500 rounded-full mx-auto mb-6 flex items-center justify-center">
                     <span className="text-3xl">✨</span>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Last Genie</h3>

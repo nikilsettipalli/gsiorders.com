@@ -63,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       : product.price;
 
   // Enhanced image URL logic with fallback
-  const imageUrl = product.images?.[0] || '/images/product-placeholder.svg';
+  const imageUrl = product.images?.[0] || '/images/placeholder-product.svg';
 
   // Enhanced badge logic with priority system
   const getBadge = () => {
