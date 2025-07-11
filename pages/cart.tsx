@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import Head from "next/head";
 import { useCart } from "../src/hooks/useCart";
+import { MainNavbar, Footer, ErrorBoundary } from "../src/components";
 import Cart from "../src/components/Cart";
 
 const CartPage = () => {
@@ -85,33 +87,49 @@ const CartPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <span className="ml-4 text-xl text-gray-600">
-                Loading cart...
-              </span>
+      <ErrorBoundary>
+        <Head>
+          <title>Shopping Cart - GSI Orders</title>
+        </Head>
+        <div className="min-h-screen bg-white">
+          <MainNavbar />
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+                <span className="ml-4 text-xl text-gray-600">
+                  Loading cart...
+                </span>
+              </div>
             </div>
           </div>
+          <Footer />
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <Cart
-      items={cart.items || []}
-      itemCount={cart.itemCount || 0}
-      total={cart.total || 0}
-      isLoading={isLoading}
-      isCheckingOut={isCheckingOut}
-      onUpdateQuantity={handleUpdateQuantity}
-      onRemoveItem={handleRemoveItem}
-      onClearCart={handleClearCart}
-      onCheckout={handleCheckout}
-    />
+    <ErrorBoundary>
+      <Head>
+        <title>Shopping Cart - GSI Orders</title>
+      </Head>
+      <div className="min-h-screen bg-white">
+        <MainNavbar />
+        <Cart
+          items={cart.items || []}
+          itemCount={cart.itemCount || 0}
+          total={cart.total || 0}
+          isLoading={isLoading}
+          isCheckingOut={isCheckingOut}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onClearCart={handleClearCart}
+          onCheckout={handleCheckout}
+        />
+        <Footer />
+      </div>
+    </ErrorBoundary>
   );
 };
 

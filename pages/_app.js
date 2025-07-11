@@ -1,6 +1,5 @@
 import React from "react";
 import Head from "next/head";
-import Layout from "../src/components/Layout";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -11,16 +10,14 @@ function MyApp({ Component, pageProps }) {
           dangerouslySetInnerHTML={{
             __html: `
             body {
-              background-color: #f3f4f6 !important;
+              background-color: #ffffff !important;
               font-family: system-ui, -apple-system, sans-serif;
             }
           `,
           }}
         />
       </Head>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <Component {...pageProps} />
     </>
   );
 }
