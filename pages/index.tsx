@@ -10,6 +10,11 @@ import {
 
 // Product data based on user requirements
 const categoryData = {
+  allProducts: {
+    name: 'All Products',
+    totalSkus: 13,
+    description: 'Complete collection across all categories'
+  },
   beverages: {
     name: 'Beverages',
     brands: [
@@ -52,7 +57,7 @@ const categoryData = {
 
 const HomePage: React.FC = () => {
   const { brand } = useCurrentBrand();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('allProducts'); // Default to All Products
   const [selectedBrand, setSelectedBrand] = useState<string>('all');
   const [selectedPotency, setSelectedPotency] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('trending');
@@ -67,12 +72,26 @@ const HomePage: React.FC = () => {
   const getFilteredProducts = () => {
     if (!selectedCategory) return [];
     
-    const category = categoryData[selectedCategory as keyof typeof categoryData];
     let allProducts: any[] = [];
     
-    category.brands.forEach(brand => {
-      allProducts = [...allProducts, ...brand.skus.map(sku => ({ ...sku, brandName: brand.name }))];
-    });
+    if (selectedCategory === 'allProducts') {
+      // Get all products from all categories
+      Object.entries(categoryData).forEach(([key, category]) => {
+        if (key !== 'allProducts' && 'brands' in category) {
+          category.brands.forEach(brand => {
+            allProducts = [...allProducts, ...brand.skus.map(sku => ({ ...sku, brandName: brand.name, category: key }))];
+          });
+        }
+      });
+    } else {
+      // Get products from specific category
+      const category = categoryData[selectedCategory as keyof typeof categoryData];
+      if ('brands' in category) {
+        category.brands.forEach(brand => {
+          allProducts = [...allProducts, ...brand.skus.map(sku => ({ ...sku, brandName: brand.name, category: selectedCategory }))];
+        });
+      }
+    }
 
     // Apply filters
     if (selectedBrand !== 'all') {
@@ -105,8 +124,35 @@ const HomePage: React.FC = () => {
 
   const getAvailableBrands = () => {
     if (!selectedCategory) return [];
+    
+    if (selectedCategory === 'allProducts') {
+      // Get all brands from all categories
+      const allBrands: string[] = [];
+      Object.entries(categoryData).forEach(([key, category]) => {
+        if (key !== 'allProducts' && 'brands' in category) {
+          category.brands.forEach(brand => {
+            if (!allBrands.includes(brand.name)) {
+              allBrands.push(brand.name);
+            }
+          });
+        }
+      });
+      return allBrands;
+    } else {
+      const category = categoryData[selectedCategory as keyof typeof categoryData];
+      if ('brands' in category) {
+        return category.brands.map(brand => brand.name);
+      }
+    }
+    return [];
+  };
+
+  const getDisplayTitle = () => {
+    if (selectedCategory === 'allProducts') {
+      return 'All Products';
+    }
     const category = categoryData[selectedCategory as keyof typeof categoryData];
-    return category.brands.map(brand => brand.name);
+    return 'name' in category ? category.name : 'Products';
   };
 
   return (
@@ -120,36 +166,126 @@ const HomePage: React.FC = () => {
       <div className="min-h-screen bg-white">
         <MainNavbar />
 
-        {/* Hero Section - Single Colorful Product Image */}
-        <section className="relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
+        {/* Enhanced Hero Section */}
+        <section className="relative bg-gradient-to-br from-emerald-600 via-blue-600 to-purple-700 py-24 lg:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0 bg-black opacity-30"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-emerald-500/20 to-transparent"></div>
+          
+          {/* Animated Background Circles */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-24 h-24 bg-white/5 rounded-full animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-300/20 rounded-full animate-ping"></div>
+
           <div className="relative max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="text-white z-10">
-                <h1 className="text-5xl lg:text-7xl font-black leading-tight mb-6">
-                  Premium Cannabis
-                  <span className="block text-yellow-300">Experience</span>
-                </h1>
-                <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                  Discover our curated selection of premium cannabis products. 
-                  From wellness to recreation, elevate your experience.
-                </p>
-                <Link
-                  href="/products"
-                  className="inline-block bg-white text-purple-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 hover:text-purple-700 transition-all duration-300 transform hover:scale-105"
-                >
-                  Explore Collection
-                </Link>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              {/* Left Content */}
+              <div className="text-white z-10 space-y-8 animate-fade-in">
+                <div className="space-y-6">
+                  <h1 className="text-5xl lg:text-7xl font-black leading-tight">
+                    Premium CBD &
+                    <span className="block bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                      Wellness Products
+                    </span>
+                  </h1>
+                  <p className="text-xl lg:text-2xl text-white/90 leading-relaxed max-w-2xl">
+                    Discover our scientifically-formulated collection featuring 
+                    <span className="font-semibold text-yellow-300"> Amrit water-soluble technology</span> 
+                    for enhanced bioavailability and faster absorption.
+                  </p>
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-white/80">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Lab Tested
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    FDA Compliant
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                      <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z" />
+                    </svg>
+                    Fast Shipping
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={() => handleCategoryClick('allProducts')}
+                    className="bg-white text-emerald-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 hover:text-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-xl"
+                  >
+                    Shop All Products
+                  </button>
+                  <Link
+                    href="/about-amrit"
+                    className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-emerald-600 transition-all duration-300 transform hover:scale-105"
+                  >
+                    Learn About Amrit
+                  </Link>
+                </div>
+
+                {/* Additional Trust Element */}
+                <div className="flex items-center gap-3 text-white/70">
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 bg-yellow-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-emerald-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-blue-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-purple-400 rounded-full border-2 border-white"></div>
+                  </div>
+                  <span className="text-sm">Trusted by thousands of customers nationwide</span>
+                </div>
               </div>
-              <div className="relative z-10">
-                <div className="relative w-full max-w-md mx-auto">
-                  <img
-                    src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=500&h=600&fit=crop&auto=format"
-                    alt="Premium Cannabis Gummies"
-                    className="w-full h-96 object-cover rounded-3xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500"
-                  />
-                  <div className="absolute -top-4 -right-4 bg-yellow-400 text-purple-700 px-4 py-2 rounded-full font-bold text-sm animate-bounce">
-                    Best Seller
+
+              {/* Right Content - Enhanced Product Display */}
+              <div className="relative z-10 lg:justify-self-end">
+                <div className="relative w-full max-w-lg mx-auto">
+                  {/* Main Product Image */}
+                  <div className="relative">
+                    <img
+                      src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=600&h=700&fit=crop&auto=format"
+                      alt="Premium CBD Gummies with Amrit Technology"
+                      className="w-full h-96 lg:h-[500px] object-cover rounded-3xl shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-700 hover:scale-105"
+                    />
+                    
+                    {/* Product Badge */}
+                    <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 px-4 py-2 rounded-full font-bold text-sm animate-bounce shadow-lg">
+                      #1 Best Seller
+                    </div>
+
+                    {/* Amrit Technology Badge */}
+                    <div className="absolute -bottom-4 -left-4 bg-emerald-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                        </svg>
+                        Amrit Tech
+                      </div>
+                    </div>
+
+                    {/* Floating Elements */}
+                    <div className="absolute top-1/4 -left-8 bg-white/20 backdrop-blur-sm rounded-2xl p-4 animate-float">
+                      <div className="text-white text-center">
+                        <div className="text-2xl font-bold">5x</div>
+                        <div className="text-xs">Faster Absorption</div>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-1/4 -right-8 bg-white/20 backdrop-blur-sm rounded-2xl p-4 animate-float" style={{animationDelay: '1s'}}>
+                      <div className="text-white text-center">
+                        <div className="text-2xl font-bold">99%</div>
+                        <div className="text-xs">Bioavailability</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -169,25 +305,63 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             
-            <div className="flex justify-center items-center space-x-8 lg:space-x-16">
+            <div className="flex justify-center items-center space-x-6 lg:space-x-12">
+              {/* All Products Category */}
+              <div className="text-center">
+                <button
+                  onClick={() => handleCategoryClick('allProducts')}
+                  className={`group relative w-32 h-32 lg:w-48 lg:h-48 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                    selectedCategory === 'allProducts' 
+                      ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-2xl ring-4 ring-emerald-200' 
+                      : 'bg-gradient-to-br from-emerald-400 to-emerald-600 hover:shadow-xl'
+                  }`}
+                >
+                  <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                    <div className="text-center">
+                      {/* Grid Icon for All Products */}
+                      <svg className="w-8 h-8 lg:w-12 lg:h-12 mx-auto mb-2 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                      </svg>
+                      <span className="text-xs lg:text-sm font-bold text-emerald-600">13 SKUs</span>
+                    </div>
+                  </div>
+                  {selectedCategory === 'allProducts' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      Active
+                    </div>
+                  )}
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                    Click to view
+                  </div>
+                </button>
+                <h3 className="mt-4 text-lg lg:text-xl font-bold text-gray-900">All Products</h3>
+                <p className="text-sm text-gray-600">Complete Collection</p>
+              </div>
+
               {/* Beverages Category */}
               <div className="text-center">
                 <button
                   onClick={() => handleCategoryClick('beverages')}
                   className={`group relative w-32 h-32 lg:w-48 lg:h-48 rounded-full transition-all duration-300 transform hover:scale-110 ${
                     selectedCategory === 'beverages' 
-                      ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-2xl' 
+                      ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-2xl ring-4 ring-blue-200' 
                       : 'bg-gradient-to-br from-blue-400 to-blue-600 hover:shadow-xl'
                   }`}
                 >
                   <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
                     <div className="text-center">
+                      {/* Bottle Icon for Beverages */}
                       <svg className="w-8 h-8 lg:w-12 lg:h-12 mx-auto mb-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v1H3a1 1 0 000 2h1v1a2 2 0 00.586 1.414L8 13.828V17a1 1 0 102 0v-3.172l3.414-3.414A2 2 0 0014 9V8h1a1 1 0 100-2h-1V5a2 2 0 00-2-2H6zm0 2h6v3H6V4z" clipRule="evenodd" />
                       </svg>
                       <span className="text-xs lg:text-sm font-bold text-blue-600">11 SKUs</span>
                     </div>
                   </div>
+                  {selectedCategory === 'beverages' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      Active
+                    </div>
+                  )}
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                     Click to view
                   </div>
@@ -202,18 +376,24 @@ const HomePage: React.FC = () => {
                   onClick={() => handleCategoryClick('sexualEnhancers')}
                   className={`group relative w-32 h-32 lg:w-48 lg:h-48 rounded-full transition-all duration-300 transform hover:scale-110 ${
                     selectedCategory === 'sexualEnhancers' 
-                      ? 'bg-gradient-to-br from-pink-400 to-purple-600 shadow-2xl' 
+                      ? 'bg-gradient-to-br from-pink-400 to-purple-600 shadow-2xl ring-4 ring-pink-200' 
                       : 'bg-gradient-to-br from-pink-400 to-purple-600 hover:shadow-xl'
                   }`}
                 >
                   <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
                     <div className="text-center">
+                      {/* Wellness/Sparkles Icon for Sexual Enhancers */}
                       <svg className="w-8 h-8 lg:w-12 lg:h-12 mx-auto mb-2 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clipRule="evenodd" />
                       </svg>
                       <span className="text-xs lg:text-sm font-bold text-pink-600">2 SKUs</span>
                     </div>
                   </div>
+                  {selectedCategory === 'sexualEnhancers' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      Active
+                    </div>
+                  )}
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                     Click to view
                   </div>
@@ -231,10 +411,10 @@ const HomePage: React.FC = () => {
             <div className="max-w-7xl mx-auto">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-black text-gray-900">
-                  {categoryData[selectedCategory as keyof typeof categoryData].name} Products
+                  {getDisplayTitle()}
                 </h2>
                 <button
-                  onClick={() => setSelectedCategory(null)}
+                  onClick={() => setSelectedCategory('allProducts')}
                   className="text-gray-500 hover:text-gray-700 transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
