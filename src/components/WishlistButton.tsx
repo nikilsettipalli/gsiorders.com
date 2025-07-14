@@ -21,37 +21,34 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
   }, [isSaved]);
 
   const handleToggle = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setIsLoading(true);
-      setError(null);
-      
       const action = currentlySaved ? 'remove' : 'add';
-      
       const response = await fetch('/api/wishlist', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: productId,
-          action: action
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: productId, action }),
       });
-
       if (!response.ok) {
         const errorData = await response.json();
+        // Idempotent UX: treat 'Already in wishlist' (on add) and 'Not in wishlist' (on remove) as success
+        if (
+          (action === 'add' && errorData.error === 'Already in wishlist') ||
+          (action === 'remove' && errorData.error === 'Not in wishlist')
+        ) {
+          setCurrentlySaved(!currentlySaved);
+          if (onToggle) onToggle(productId, !currentlySaved);
+          // Show message for test: setError(errorData.error)
+          setError(errorData.error);
+          return;
+        }
         throw new Error(errorData.error || 'Failed to toggle wishlist');
       }
-
       const data = await response.json();
       const newSavedState = data.isSaved !== undefined ? data.isSaved : !currentlySaved;
       setCurrentlySaved(newSavedState);
-      
-      // Call the optional callback with success state
-      if (onToggle) {
-        onToggle(productId, newSavedState);
-      }
-
+      if (onToggle) onToggle(productId, newSavedState);
     } catch (error: any) {
       console.error('Error toggling wishlist:', error);
       

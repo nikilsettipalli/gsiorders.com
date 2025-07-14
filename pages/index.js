@@ -5,7 +5,6 @@ import { useCart } from '../src/hooks/useCart';
 export default function Home() {
   const { cart } = useCart();
 
-  // Brand configuration
   const brands = [
     {
       name: 'Liquid Heaven',
@@ -44,17 +43,6 @@ export default function Home() {
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white/90">
             Your premier destination for three exceptional brands: Liquid Heaven, Motaquila, and Last Genie.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/products"
-              className="bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors inline-flex items-center justify-center"
-            >
-              Explore All Products
-            </Link>
-            <div className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold inline-flex items-center justify-center">
-              🛒 Cart: {cart.itemCount} items • ${cart.total.toFixed(2)}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -71,12 +59,11 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {brands.map((brand, index) => (
+            {brands.map((brand) => (
               <div
                 key={brand.slug}
                 className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-105"
               >
-                {/* Brand Header */}
                 <div className={`bg-gradient-to-r ${brand.gradient} text-white p-8 text-center`}>
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
                     <span className="text-2xl font-bold">{brand.name.charAt(0)}</span>
@@ -85,11 +72,10 @@ export default function Home() {
                   <p className="text-white/90">{brand.description}</p>
                 </div>
 
-                {/* Brand Features */}
                 <div className="p-8">
                   <ul className="space-y-3 mb-8">
-                    {brand.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center text-gray-700">
+                    {brand.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-gray-700">
                         <svg className="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
@@ -97,8 +83,6 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-
-                  {/* Brand Action Button */}
                   <Link
                     href={`/${brand.slug}`}
                     className={`w-full bg-gradient-to-r ${brand.gradient} text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 inline-flex items-center justify-center group-hover:scale-105`}

@@ -1,4 +1,3 @@
-// src/hooks/useCart.ts
 import { useState, useEffect, useCallback } from "react";
 
 interface CartItem {
@@ -59,7 +58,6 @@ export const useCart = (): UseCartReturn => {
       setCart(data);
     } catch (error) {
       console.error("Error fetching cart:", error);
-      // Set empty cart on error
       setCart({
         items: [],
         total: 0,
@@ -93,40 +91,43 @@ export const useCart = (): UseCartReturn => {
 
         const data = await response.json();
         setCart(data);
-
-        // Show success message (you can customize this)
+        await fetchCart(); // ✅ Refresh after mutation
         console.log("✅ Added to cart successfully");
       } catch (error) {
         console.error("Error adding to cart:", error);
-        throw error; // Re-throw so component can handle it
+        throw error;
       } finally {
         setIsLoading(false);
       }
     },
-    []
+    [fetchCart]
   );
 
   // Remove item from cart
-  const removeFromCart = useCallback(async (productId: string) => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/cart?product_id=${productId}`, {
-        method: "DELETE",
-      });
+  const removeFromCart = useCallback(
+    async (productId: string) => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`/api/cart?product_id=${productId}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to remove from cart");
+        if (!response.ok) {
+          throw new Error("Failed to remove from cart");
+        }
+
+        const data = await response.json();
+        setCart(data);
+        await fetchCart(); // ✅ Refresh after mutation
+      } catch (error) {
+        console.error("Error removing from cart:", error);
+        throw error;
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = await response.json();
-      setCart(data);
-    } catch (error) {
-      console.error("Error removing from cart:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [fetchCart]
+  );
 
   // Update quantity of item in cart
   const updateQuantity = useCallback(
@@ -155,6 +156,7 @@ export const useCart = (): UseCartReturn => {
 
         const data = await response.json();
         setCart(data);
+        await fetchCart(); // ✅ Refresh after mutation
       } catch (error) {
         console.error("Error updating cart:", error);
         throw error;
@@ -162,7 +164,7 @@ export const useCart = (): UseCartReturn => {
         setIsLoading(false);
       }
     },
-    [removeFromCart]
+    [fetchCart, removeFromCart]
   );
 
   // Clear entire cart
@@ -182,20 +184,19 @@ export const useCart = (): UseCartReturn => {
         total: 0,
         itemCount: 0,
       });
+      await fetchCart(); // ✅ Refresh after mutation
     } catch (error) {
       console.error("Error clearing cart:", error);
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [fetchCart]);
 
-  // Refresh cart (alias for fetchCart)
   const refreshCart = useCallback(() => {
     return fetchCart();
   }, [fetchCart]);
 
-  // Load cart on mount
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
