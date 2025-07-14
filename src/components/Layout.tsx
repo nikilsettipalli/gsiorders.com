@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import useCart from '../hooks/useCart';
+import { supabase } from '@/lib/supabaseClient';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,19 +13,55 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const { cart, refreshCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     refreshCart();
   }, [refreshCart]);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+
+    checkUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      checkUser();
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
   const brands = [
-    { name: 'Liquid Heaven', slug: 'liquidheaven', color: '#10b981', gradient: 'from-emerald-500 to-emerald-600', image: '/liquid-heaven.png' },
-    { name: 'Motaquila', slug: 'motaquila', color: '#ec4899', gradient: 'from-pink-500 to-pink-600' },
-    { name: 'Last Genie', slug: 'lastgenie', color: '#6366f1', gradient: 'from-indigo-500 to-indigo-600' }
+    {
+      name: 'Liquid Heaven',
+      slug: 'liquidheaven',
+      color: '#10b981',
+      gradient: 'from-emerald-500 to-emerald-600',
+      image: '/liquid-heaven.png',
+    },
+    {
+      name: 'Motaquila',
+      slug: 'motaquila',
+      color: '#ec4899',
+      gradient: 'from-pink-500 to-pink-600',
+    },
+    {
+      name: 'Last Genie',
+      slug: 'lastgenie',
+      color: '#6366f1',
+      gradient: 'from-indigo-500 to-indigo-600',
+    },
   ];
 
   const currentBrandSlug = router.asPath.split('/')[1];
-  const currentBrand = brands.find(b => b.slug === currentBrandSlug);
+  const currentBrand = brands.find((b) => b.slug === currentBrandSlug);
   const brandGradient = currentBrand?.gradient || 'from-blue-500 to-blue-600';
 
   return (
@@ -32,19 +69,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <nav className={`bg-gradient-to-r ${brandGradient} shadow-lg sticky top-0 z-50`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-3">
-              <Image
-                src="/gsi-logo.png"
-                alt="GSI Logo"
-                width={50}
-                height={50}
-              />
+              <Image src="/gsi-logo.png" alt="GSI Logo" width={50} height={50} />
               <div className="text-white">
                 <h1 className="text-xl font-bold">GSI Orders</h1>
                 {currentBrand && <p className="text-sm text-white/80">{currentBrand.name}</p>}
               </div>
             </Link>
 
+            {/* Nav Links */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/" className="text-white">Home</Link>
               <Link href="/products" className="text-white">Browse Products</Link>
@@ -61,8 +95,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </span>
                 )}
               </Link>
+
+              {/* Profile Icon */}
+              <button
+                onClick={() => router.push(isAuthenticated ? '/account' : '/auth')}
+                className="text-white relative"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M5.121 17.804A11.954 11.954 0 0112 15c2.485 0 4.779.755 6.879 2.042M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
             </div>
 
+            {/* Mobile Menu Toggle */}
             <div className="md:hidden">
               <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white p-2">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,6 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
 
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/30 backdrop-blur-sm border-t border-white/20">
             {['/', '/products', '/orders', '/admin', '/contact'].map((path, i) => {
@@ -85,6 +132,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             })}
             <Link href="/cart" className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
               Cart ({cart.itemCount})
+            </Link>
+            <Link
+              href={isAuthenticated ? '/account' : '/auth'}
+              className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {isAuthenticated ? 'My Account' : 'Sign In'}
             </Link>
           </div>
         )}
