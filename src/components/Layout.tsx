@@ -1,3 +1,5 @@
+// Layout.tsx
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -82,7 +84,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/" className="text-white">Home</Link>
               <Link href="/products" className="text-white">Browse Products</Link>
-              <Link href="/orders" className="text-white">Orders</Link>
               <Link href="/admin" className="text-white">Admin</Link>
               <Link href="/contact" className="text-white">Contact</Link>
               <Link href="/cart" className="relative text-white">
@@ -122,14 +123,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/30 backdrop-blur-sm border-t border-white/20">
-            {['/', '/products', '/orders', '/admin', '/contact'].map((path, i) => {
-              const names = ['Home', 'Browse Products', 'Orders', 'Admin', 'Contact'];
-              return (
-                <Link key={path} href={path} className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
-                  {names[i]}
-                </Link>
-              );
-            })}
+            {[
+              { path: '/', label: 'Home' },
+              { path: '/products', label: 'Browse Products' },
+              { path: '/admin', label: 'Admin' },
+              { path: '/contact', label: 'Contact' },
+            ].map(({ path, label }) => (
+              <Link key={path} href={path} className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
+                {label}
+              </Link>
+            ))}
             <Link href="/cart" className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(false)}>
               Cart ({cart.itemCount})
             </Link>

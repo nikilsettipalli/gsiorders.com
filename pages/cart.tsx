@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useCart } from "../src/hooks/useCart";
 import Cart from "../src/components/Cart";
+import { supabase } from "@/lib/supabaseClient";
 
 const CartPage = () => {
-  const { cart, isLoading, removeFromCart, updateQuantity, clearCart } =
-    useCart();
+  const { cart, isLoading, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleClearCart = async () => {
@@ -45,16 +45,30 @@ const CartPage = () => {
     setIsCheckingOut(true);
 
     try {
-      // Prepare cart items for Stripe
+      // Step 1: Get authenticated user ID
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      const userId = session?.user?.id;
+
+      if (!userId || error) {
+        console.error("User not authenticated or session error:", error);
+        alert("You must be logged in to checkout.");
+        setIsCheckingOut(false);
+        return;
+      }
+
+      // Step 2: Prepare cart items
       const cartItems = cart.items.map((item) => ({
         name: item.products.name,
         price: item.products.price,
         quantity: item.quantity,
+        product_id: item.product_id,
       }));
 
-      console.log("Starting checkout with items:", cartItems);
-
-      // Create checkout session
+      // Step 3: Call your backend API to create Stripe session
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -62,21 +76,37 @@ const CartPage = () => {
         },
         body: JSON.stringify({
           cartItems: cartItems,
-          userId: "123e4567-e89b-12d3-a456-426614174000", // Using test user ID for now
+          userId: userId,
         }),
       });
 
       const data = await response.json();
-      console.log("Checkout response:", data);
+      const sessionId = data.sessionId;
+      const checkoutUrl = data.url;
 
-      if (data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL received");
+      if (!sessionId || !checkoutUrl) {
+        throw new Error("No session ID or URL received from backend.");
       }
-    } catch (error) {
-      console.error("Checkout error:", error);
+
+      // Step 4: Save cart snapshot to Supabase
+      const { error: insertError } = await supabase.from("checkout_sessions").insert([
+        {
+          user_id: userId,
+          stripe_session_id: sessionId,
+          cart: cartItems,
+        },
+      ]);
+
+      if (insertError) {
+        console.error("❌ Failed to insert cart snapshot:", insertError.message);
+        alert("Error saving cart before checkout.");
+        return;
+      }
+
+      // Step 5: Redirect to Stripe
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      console.error("Checkout error:", err);
       alert("Failed to start checkout. Please try again.");
     } finally {
       setIsCheckingOut(false);
@@ -90,9 +120,7 @@ const CartPage = () => {
           <div className="bg-white rounded-lg shadow-md p-8">
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <span className="ml-4 text-xl text-gray-600">
-                Loading cart...
-              </span>
+              <span className="ml-4 text-xl text-gray-600">Loading cart...</span>
             </div>
           </div>
         </div>
